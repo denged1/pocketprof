@@ -1,3 +1,4 @@
+import { stringify } from 'querystring';
 import React, { useEffect, useState } from 'react';
 import GenFeedback from "./GenFeedback";
 
@@ -12,7 +13,12 @@ const AnswerBoxes: React.FC<AnswerBoxesProps> = ({ extractedText }) => {
   const [correctAnswer, setCorrectAnswer] = useState('');
   const [contentVisible, setContentVisible] = useState(false); // New state to manage visibility
   const [feedbackRequested, setFeedbackRequested] = useState(false);
-
+  const [buttonText, setButtonText] = useState('Generate Explanation');
+  const [feedbackContent, setFeedbackContent] = useState<{
+    question: string;
+    userAnswer: string;
+    correctAnswer: string;
+  } | null>(null);
   const textareaStyle = {
     width: '700px',
     height: '150px',
@@ -22,6 +28,12 @@ const AnswerBoxes: React.FC<AnswerBoxesProps> = ({ extractedText }) => {
 
   const handleGenerateFeedback = () => {
     // Set a flag to indicate feedback was requested
+    setFeedbackContent({
+      question,
+      userAnswer,
+      correctAnswer
+    });
+    setButtonText('Regenerate Explanation');
     setFeedbackRequested(true);
   };
 
@@ -73,12 +85,12 @@ const AnswerBoxes: React.FC<AnswerBoxesProps> = ({ extractedText }) => {
         <br />
         <textarea value={correctAnswer} onChange={((e) => setCorrectAnswer(e.target.value))} style={textareaStyle} />
       </div>
-      <button onClick={handleGenerateFeedback} style={{ marginTop: '25px', padding: '10px' }}>Generate Feedback</button>
-      {feedbackRequested && (
+      <button onClick={handleGenerateFeedback} style={{ marginTop: '25px', padding: '10px' }}>{buttonText}</button>
+      {feedbackRequested && feedbackContent &&(
         <GenFeedback
-          question={question}
-          userAnswer={userAnswer}
-          correctAnswer={correctAnswer}
+          question={feedbackContent.question}
+          userAnswer={feedbackContent.userAnswer}
+          correctAnswer={feedbackContent.correctAnswer}
         />
       )}
     </div>
